@@ -1,8 +1,8 @@
 //import java.util.ArrayList;
 //import java.util.List;
 import java.util.Random;
-import java.lang.Math.*;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -32,7 +32,7 @@ import javafx.geometry.Point2D;
             Random generator = new Random();
             return generator.nextDouble()*limit; 
         }
-        /*public static double distance(double x1,double y1,double x2,double y2){
+        public static double distance(double x1,double y1,double x2,double y2){
             return Math.sqrt(Math.pow(((x2)-(x1)),2)+Math.pow((y2-y1),2));
         }
         public static double[] doInsertionSort(double[] input){
@@ -67,32 +67,58 @@ import javafx.geometry.Point2D;
                 return true;
             }
             else return false;
-        }*/
-        public static void makeTriangles(StackPane root,Polygon tri){
+        }
+        public static void addTriangles(StackPane root,Polygon tri){
             root.getChildren().add(tri);
+        }
+        public Polygon makeTriangle(boolean Real_or_Fake){
+            double x1;
+            double y1;
+            double x2;
+            double y2;
+            double x3;
+            double y3;
+            do{
+                x1 = getRand(x);
+                y1 = getRand(y);
+                x2 = getRand(x);
+                y2 = getRand(y);
+                x3 = getRand(x);
+                y3 = getRand(y);
+            }while(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake);
+            return new Polygon(x1,y1,x2,y2,x3,y3);
         }
         public void CTWSCr(Stage secondaryStage){
             Button btn = new Button("Click Me");
             Button btn2 = new Button ("Rapid Fire");
             btn.setOnAction((ActionEvent event)->{CTWSCr(secondaryStage);});
             btn2.setOnAction((ActionEvent event1)->{
-                    for(int x = 50;x>0;x--){
-                        CTWSCr(secondaryStage);
-                    }
-                });
+                for(int x1 = 5;x1>0;x1--){
+                    //I think I need to make another Stage for Rapidfire
+                    //Also ask for help on how to detect a key held down
+                    Task<Void> sleeper = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            try{
+                                Thread.sleep(125);
+                            }catch (InterruptedException e){}
+                            return null;
+                        }
+                    };
+                    new Thread(sleeper).start();
+                    CTWSCr(secondaryStage);
+                }
+            });
             StackPane boot = new StackPane();
-            Circle le_un = new Circle((double)200,Color.DARKGRAY);
+            Circle le_un = new Circle((double)200,Color.RED);
             boot.getChildren().add(le_un);
             try{
                 /*//For some reason the StackPane won't illustrate the polygons in the ArrayList
                 ArrayList<Polygon> Trianglefilling = new ArrayList<>();*/
-                Polygon[] Trianglefilling = new Polygon[10];
-                for(int x2 = 0;x2<10;x2++){
-                    Trianglefilling[x2] = new Polygon(
-                        getRand(x),getRand(y)
-                        ,getRand(x),getRand(y)
-                        ,getRand(x),getRand(y));
-                    makeTriangles(boot,Trianglefilling[x2]);
+                Polygon[] Trianglefilling = new Polygon[20];
+                for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                    Trianglefilling[x2] = makeTriangle(true);
+                    addTriangles(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
                         getRand(x),getRand(y)
