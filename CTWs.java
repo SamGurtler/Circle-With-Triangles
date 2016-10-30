@@ -2,7 +2,7 @@
 //import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.concurrent.Task;
+//import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -96,7 +96,7 @@ import javafx.geometry.Point2D;
                 for(int x1 = 5;x1>0;x1--){
                     //I think I need to make another Stage for Rapidfire
                     //Also ask for help on how to detect a key held down
-                    Task<Void> sleeper = new Task<Void>() {
+                    /*Task<Void> sleeper = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
                             try{
@@ -105,7 +105,7 @@ import javafx.geometry.Point2D;
                             return null;
                         }
                     };
-                    new Thread(sleeper).start();
+                    new Thread(sleeper).start();*/
                     CTWSCr(secondaryStage);
                 }
             });
