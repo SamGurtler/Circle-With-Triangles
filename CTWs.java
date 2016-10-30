@@ -2,8 +2,10 @@
 //import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-//import javafx.concurrent.Task;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -68,8 +70,11 @@ import javafx.geometry.Point2D;
             }
             else return false;
         }
-        public static void addTriangles(StackPane root,Polygon tri){
+        public static void addTriangle(StackPane root,Polygon tri){
             root.getChildren().add(tri);
+        }
+        public static void removeTriangle(StackPane boot,Polygon tri){
+            boot.getChildren().remove(tri);
         }
         public Polygon makeTriangle(boolean Real_or_Fake){
             double x1;
@@ -96,17 +101,7 @@ import javafx.geometry.Point2D;
                 for(int x1 = 5;x1>0;x1--){
                     //I think I need to make another Stage for Rapidfire
                     //Also ask for help on how to detect a key held down
-                    /*Task<Void> sleeper = new Task<Void>() {
-                        @Override
-                        protected Void call() throws Exception {
-                            try{
-                                Thread.sleep(125);
-                            }catch (InterruptedException e){}
-                            return null;
-                        }
-                    };
-                    new Thread(sleeper).start();*/
-                    CTWSCr(secondaryStage);
+                    CTWSRF(secondaryStage);
                 }
             });
             StackPane boot = new StackPane();
@@ -115,10 +110,81 @@ import javafx.geometry.Point2D;
             try{
                 /*//For some reason the StackPane won't illustrate the polygons in the ArrayList
                 ArrayList<Polygon> Trianglefilling = new ArrayList<>();*/
-                Polygon[] Trianglefilling = new Polygon[20];
+                Polygon[] Trianglefilling = new Polygon[1];
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
                     Trianglefilling[x2] = makeTriangle(true);
-                    addTriangles(boot,Trianglefilling[x2]);
+                    addTriangle(boot,Trianglefilling[x2]);
+                    /*//Keep Until you get ArrayList Working!!!
+                    makeTriangles(boot,new Polygon(
+                        getRand(x),getRand(y)
+                        ,getRand(x),getRand(y)
+                        ,getRand(x),getRand(y)));*/
+                }
+            }
+            catch(java.lang.Exception exception){}
+            Scene scene = new Scene(boot,x,y,Color.BLACK);
+            boot.getChildren().add(btn2);
+            boot.getChildren().add(btn);
+            btn.setTranslateY(-185);
+            btn.setTranslateX(-167.5);
+            btn2.setTranslateY(-185);
+            btn2.setTranslateX(165);
+            secondaryStage.setTitle("Circle With Triangles");
+            secondaryStage.setScene(scene);
+            secondaryStage.show();
+            }
+        public void CTWSRF(Stage secondaryStage){
+            Button btn = new Button("Click Me");
+            Button btn2 = new Button ("Rapid Fire");
+            btn.setOnAction((ActionEvent event)->{CTWSCr(secondaryStage);});
+            btn2.setOnAction((ActionEvent event1)->{
+                for(int x1 = 5;x1>0;x1--){
+                    //I think I need to make another Stage for Rapidfire
+                    //Also ask for help on how to detect a key held down
+                    CTWSRF(secondaryStage);
+                }
+            });
+            StackPane boot = new StackPane();
+            Circle le_un = new Circle((double)200,Color.RED);
+            boot.getChildren().add(le_un);
+            try{
+                /*//For some reason the StackPane won't illustrate the polygons in the ArrayList
+                ArrayList<Polygon> Trianglefilling = new ArrayList<>();*/
+                Polygon[] Trianglefilling = new Polygon[1];
+                for(int x1 = 4;x1>0;x1--){
+                    //I think I need to make another Stage for Rapidfire
+                    //Also ask for help on how to detect a key held down
+                    Task<Void> sleeper = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            try{
+                                Thread.sleep(5000);
+                            }catch (InterruptedException e){}
+                            return null;
+                        }
+                    };
+                    //new Thread(sleeper).start();
+                    //root.wait(4);
+                    //root.notify();
+                    for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                        Trianglefilling[x2] = makeTriangle(true);
+                        addTriangle(boot,Trianglefilling[x2]);
+                        /*//Keep Until you get ArrayList Working!!!
+                        makeTriangles(boot,new Polygon(
+                            getRand(x),getRand(y)
+                            ,getRand(x),getRand(y)
+                            ,getRand(x),getRand(y)));*/
+                    }
+                    //new Thread(sleeper).start();
+                     //root.wait(4);
+                    //root.notify();
+                    for (Polygon Trianglefilling1 : Trianglefilling) {
+                        removeTriangle(boot, Trianglefilling1);
+                    }
+                }
+                for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                    Trianglefilling[x2] = makeTriangle(true);
+                    addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
                         getRand(x),getRand(y)
