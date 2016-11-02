@@ -1,6 +1,7 @@
-//import java.util.ArrayList;
+import java.util.ArrayList;
 //import java.util.List;
 import java.util.Random;
+import java.lang.Double;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -33,6 +34,17 @@ import javafx.geometry.Point2D;
         public static double getRand(double limit){
             Random generator = new Random();
             return generator.nextDouble()*limit; 
+        }
+        public static double getSlope(double x1,double y1,double x2,double y2){
+            return ((y2-y1)/(x2-x1));
+        }
+        public static double[] getEqOfLine(double x1,double y1,double x2,double y2){
+            //y=m(x-x1)+y1;
+           double[] coefficients = new double[2];  
+           coefficients[0] = getSlope(x1,y1,x2,y2);
+           coefficients[1] = y1-(coefficients[0]*x1);
+           System.out.println("y = "+coefficients[0]+" +"+coefficients[1]);
+           return coefficients;
         }
         public static double distance(double x1,double y1,double x2,double y2){
             return Math.sqrt(Math.pow(((x2)-(x1)),2)+Math.pow((y2-y1),2));
@@ -92,6 +104,56 @@ import javafx.geometry.Point2D;
                 y3 = getRand(y);
             }while(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake);
             return new Polygon(x1,y1,x2,y2,x3,y3);
+        }
+        public static double[][] getCircleCords(double centerX,double centerY, double radius){
+            ArrayList<double[]> matrix = new ArrayList<double[]>();
+            int count = 0;
+            for(double x = (centerX-radius);x<=(radius+centerX);x=+Double.MIN_VALUE){
+                matrix.add(new double[3]);
+                matrix.get(count)[0] = x;
+                matrix.get(count)[1] = Math.sqrt(Math.pow(radius,2)-Math.pow(x,2));
+                count++;
+            }
+            count = 0;
+            for(double x = (centerX-radius);x<=(radius+centerX);x=+Double.MIN_VALUE){
+                matrix.get(count)[3] = -Math.sqrt(Math.pow(radius,2)-Math.pow(x,2));
+                count++;
+            }
+            double[][] cords = new double[matrix.size()][2];
+            for(int x = 0;x<=matrix.size();x++){
+              cords[x][0]  = matrix.get(x)[0];
+              cords[x][1] = matrix.get(x)[1];
+              cords[x][2] = matrix.get(x)[2];
+            }
+            return cords; 
+        }
+        public static boolean circleHasTriangle(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
+            //Change if you want to make work with other shapes
+            boolean[] checkpoints = new boolean[3];
+            //boolean[] checkpoints={true,true,true,true};
+            double[][] cords = getCircleCords(circle.getCenterX(),circle.getCenterY(),circle.getRadius());
+            for(int count = 0;count<=cords.length;count++){
+                try{
+                    if(x1 >= (circle.getCenterX() - circle.getRadius()) && x1 <= (circle.getCenterX() + circle.getRadius()) && cords[count][1] <= y1 && y1 =< cords[count][2]){
+                        checkpoints[0] = true;
+                    }
+                    if(x2 >= (circle.getCenterX() - circle.getRadius()) && x2 <= (circle.getCenterX() + circle.getRadius()) && cords[count][1] <= y2 && y2 =< cords[count][2]){
+                        checkpoints[1] = true;
+                    }
+                    if((x3 >= (circle.getCenterX() - circle.getRadius())) && (x3 <= (circle.getCenterX() + circle.getRadius())) && ((cords[count][1]) <= y3) && (y3 =< (cords[count][2]))){
+                        checkpoints[2] = true;
+                    }
+                }
+                catch(java.lang.Exception exception){
+                    
+                }
+            }
+            for(int count = 0;count<=checkpoints.length;count++){
+                 if(!checkpoints[count]){
+                    return false;
+                 }
+            }
+            return true;
         }
         public void CTWSCr(Stage secondaryStage){
             Button btn = new Button("Click Me");
