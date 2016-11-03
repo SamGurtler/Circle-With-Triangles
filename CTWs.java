@@ -88,7 +88,7 @@ import javafx.geometry.Point2D;
         public static void removeTriangle(StackPane boot,Polygon tri){
             boot.getChildren().remove(tri);
         }
-        public Polygon makeTriangle(boolean Real_or_Fake){
+        public Polygon makeTriangle(Circle circle,boolean Real_or_Fake){
             double x1;
             double y1;
             double x2;
@@ -102,7 +102,7 @@ import javafx.geometry.Point2D;
                 y2 = getRand(y);
                 x3 = getRand(x);
                 y3 = getRand(y);
-            }while(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake);
+            }while(circleHasTriangle(circle,x1,y1,x2,y2,x3,y3)&&!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake);
             return new Polygon(x1,y1,x2,y2,x3,y3);
         }
         public static double[][] getCircleCords(double centerX,double centerY, double radius){
@@ -134,13 +134,13 @@ import javafx.geometry.Point2D;
             double[][] cords = getCircleCords(circle.getCenterX(),circle.getCenterY(),circle.getRadius());
             for(int count = 0;count<=cords.length;count++){
                 try{
-                    if(x1 >= (circle.getCenterX() - circle.getRadius()) && x1 <= (circle.getCenterX() + circle.getRadius()) && cords[count][1] <= y1 && y1 =< cords[count][2]){
+                    if(x1 >= (circle.getCenterX() - circle.getRadius()) && x1 <= (circle.getCenterX() + circle.getRadius()) && cords[count][1] <= y1 && y1 <= cords[count][2]){
                         checkpoints[0] = true;
                     }
-                    if(x2 >= (circle.getCenterX() - circle.getRadius()) && x2 <= (circle.getCenterX() + circle.getRadius()) && cords[count][1] <= y2 && y2 =< cords[count][2]){
+                    if(x2 >= (circle.getCenterX() - circle.getRadius()) && x2 <= (circle.getCenterX() + circle.getRadius()) && cords[count][1] <= y2 && y2 <= cords[count][2]){
                         checkpoints[1] = true;
                     }
-                    if((x3 >= (circle.getCenterX() - circle.getRadius())) && (x3 <= (circle.getCenterX() + circle.getRadius())) && ((cords[count][1]) <= y3) && (y3 =< (cords[count][2]))){
+                    if((x3 >= (circle.getCenterX() - circle.getRadius())) && (x3 <= (circle.getCenterX() + circle.getRadius())) && ((cords[count][1]) <= y3) && (y3 <= (cords[count][2]))){
                         checkpoints[2] = true;
                     }
                 }
@@ -174,7 +174,7 @@ import javafx.geometry.Point2D;
                 ArrayList<Polygon> Trianglefilling = new ArrayList<>();*/
                 Polygon[] Trianglefilling = new Polygon[1];
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                    Trianglefilling[x2] = makeTriangle(true);
+                    Trianglefilling[x2] = makeTriangle(le_un,true);
                     addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
@@ -229,7 +229,7 @@ import javafx.geometry.Point2D;
                     //root.wait(4);
                     //root.notify();
                     for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                        Trianglefilling[x2] = makeTriangle(true);
+                        Trianglefilling[x2] = makeTriangle(le_un,true);
                         addTriangle(boot,Trianglefilling[x2]);
                         /*//Keep Until you get ArrayList Working!!!
                         makeTriangles(boot,new Polygon(
@@ -245,7 +245,7 @@ import javafx.geometry.Point2D;
                     }
                 }
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                    Trianglefilling[x2] = makeTriangle(true);
+                    Trianglefilling[x2] = makeTriangle(le_un,true);
                     addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
