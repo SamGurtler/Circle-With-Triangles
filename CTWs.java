@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Shape;
     public class CTWs extends Application {
         private Parent root;    
         private double x = 400;
@@ -88,7 +89,7 @@ import javafx.geometry.Point2D;
         public static void removeTriangle(StackPane boot,Polygon tri){
             boot.getChildren().remove(tri);
         }
-        public Polygon makeTriangle(Circle circle,boolean Real_or_Fake){
+        public Polygon makeTriangle(Circle circle,boolean Real_or_Fake,Polygon[] tri){
             double x1;
             double y1;
             double x2;
@@ -102,8 +103,9 @@ import javafx.geometry.Point2D;
                 y2 = getRand(y);
                 x3 = getRand(x);
                 y3 = getRand(y);
-            }while(circleHasTriangle(circle,x1,y1,x2,y2,x3,y3)&&!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake);
+            }while(CHT(circle,x1,y1,x2,y2,x3,y3)&&(!getInter(new Polygon(x1,y1,x2,y2,x3,y3),tri))&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake));
             return new Polygon(x1,y1,x2,y2,x3,y3);
+            
         }
         public static double[][] getCircleCords(double centerX,double centerY, double radius){
             ArrayList<double[]> matrix = new ArrayList<double[]>();
@@ -126,6 +128,22 @@ import javafx.geometry.Point2D;
               cords[x][2] = matrix.get(x)[2];
             }
             return cords; 
+        }
+        public static boolean CHT(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
+            return circle.contains(x1, y1)&&circle.contains(x2, y2)&&circle.contains(x3, y3);
+        }
+        public static boolean getInter(Polygon tri,Polygon[] triz){
+            Shape inter;
+            for (Polygon triz1 : triz) {
+                inter = Shape.intersect(triz1, tri);
+                System.out.println(inter.getLayoutBounds().getWidth() + ":" + inter.getLayoutBounds().getHeight());
+                if(inter.getLayoutBounds().getHeight()>=0 ||inter.getLayoutBounds().getWidth()>=0) {
+                    return false;
+                }
+            }
+            return true;
+            
+            //if(inter.getLayoutBounds().getHeight()<=0 || inter.getLayoutBounds().getWidth()<=0) {
         }
         public static boolean circleHasTriangle(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             //Change if you want to make work with other shapes
@@ -170,11 +188,15 @@ import javafx.geometry.Point2D;
             Circle le_un = new Circle((double)200,Color.RED);
             boot.getChildren().add(le_un);
             try{
-                /*//For some reason the StackPane won't illustrate the polygons in the ArrayList
-                ArrayList<Polygon> Trianglefilling = new ArrayList<>();*/
-                Polygon[] Trianglefilling = new Polygon[1];
+                //For some reason the StackPane won't illustrate the polygons in the ArrayList
+                /*ArrayList<Polygon> Trianglefilling = new ArrayList<>();
+                for(int count = 0;count<10;count++){*/
+                Polygon[] Trianglefilling = new Polygon[2];
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                    Trianglefilling[x2] = makeTriangle(le_un,true);
+                   Trianglefilling[x2] = makeTriangle(le_un,true,Trianglefilling);
+                    /*for(int count = 0;count<Trianglefilling.length;count++){
+                    System.out.println(getInter(Trianglefilling[count],Trianglefilling));
+                    }*/
                     addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
@@ -212,7 +234,7 @@ import javafx.geometry.Point2D;
             try{
                 /*//For some reason the StackPane won't illustrate the polygons in the ArrayList
                 ArrayList<Polygon> Trianglefilling = new ArrayList<>();*/
-                Polygon[] Trianglefilling = new Polygon[1];
+                Polygon[] Trianglefilling = new Polygon[2];
                 for(int x1 = 4;x1>0;x1--){
                     //I think I need to make another Stage for Rapidfire
                     //Also ask for help on how to detect a key held down
@@ -229,7 +251,7 @@ import javafx.geometry.Point2D;
                     //root.wait(4);
                     //root.notify();
                     for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                        Trianglefilling[x2] = makeTriangle(le_un,true);
+                        Trianglefilling[x2] = makeTriangle(le_un,true,Trianglefilling);
                         addTriangle(boot,Trianglefilling[x2]);
                         /*//Keep Until you get ArrayList Working!!!
                         makeTriangles(boot,new Polygon(
@@ -245,7 +267,7 @@ import javafx.geometry.Point2D;
                     }
                 }
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                    Trianglefilling[x2] = makeTriangle(le_un,true);
+                    Trianglefilling[x2] = makeTriangle(le_un,true,Trianglefilling);
                     addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
