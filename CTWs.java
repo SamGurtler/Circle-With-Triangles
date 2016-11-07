@@ -36,17 +36,17 @@ import javafx.scene.shape.Shape;
             Random generator = new Random();
             return generator.nextDouble()*limit; 
         }
-        public static double getSlope(double x1,double y1,double x2,double y2){
+        /*public static double getSlope(double x1,double y1,double x2,double y2){
             return ((y2-y1)/(x2-x1));
-        }
-        public static double[] getEqOfLine(double x1,double y1,double x2,double y2){
+        }*/
+        /*public static double[] getEqOfLine(double x1,double y1,double x2,double y2){
             //y=m(x-x1)+y1;
            double[] coefficients = new double[2];  
            coefficients[0] = getSlope(x1,y1,x2,y2);
            coefficients[1] = y1-(coefficients[0]*x1);
            System.out.println("y = "+coefficients[0]+" +"+coefficients[1]);
            return coefficients;
-        }
+        }*/
         public static double distance(double x1,double y1,double x2,double y2){
             return Math.sqrt(Math.pow(((x2)-(x1)),2)+Math.pow((y2-y1),2));
         }
@@ -63,13 +63,13 @@ import javafx.scene.shape.Shape;
             }
             return input;
         }
-        public static double[] triangleSideLength(Point2D p1,Point2D p2,Point2D p3){
+        /*public static double[] triangleSideLength(Point2D p1,Point2D p2,Point2D p3){
             double[] distances = new double[3];
             distances[0] = p1.distance(p2);
             distances[1] = p2.distance(p3);
             distances[2] = p3.distance(p1);
             return doInsertionSort(distances);
-        }
+        }*/
         public static double[] triangleSideLength(double x1,double y1,double x2,double y2,double x3,double y3){
             double[] distances = new double[3];
             distances[0] = distance(x1,y1,x2,y2);
@@ -90,24 +90,26 @@ import javafx.scene.shape.Shape;
             boot.getChildren().remove(tri);
         }
         public Polygon makeTriangle(Circle circle,boolean Real_or_Fake,Polygon[] tri){
-            double x1;
-            double y1;
-            double x2;
-            double y2;
-            double x3;
-            double y3;
-            do{
-                x1 = getRand(x);
-                y1 = getRand(y);
-                x2 = getRand(x);
-                y2 = getRand(y);
-                x3 = getRand(x);
-                y3 = getRand(y);
-            }while(CHT(circle,x1,y1,x2,y2,x3,y3)&&(!getInter(new Polygon(x1,y1,x2,y2,x3,y3),tri))&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake));
+            double x1 = getRand(x);
+            double y1 = getRand(y);
+            double x2 = getRand(x);
+            double y2 = getRand(y);
+            double x3 = getRand(x);
+            double y3 = getRand(y);
+            while((getInter(new Polygon(x1,y1,x2,y2,x3,y3),tri))&&!CHT(circle,x1,y1,x2,y2,x3,y3)&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake)){
+				System.out.println("Is"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
+				System.out.println("Are"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"in the circle:"+CHT(circle,x1,y1,x2,y2,x3,y3));
+				System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+getInter(new Polygon(x1,y1,x2,y2,x3,y3),tri));
+				x1 = getRand(x);
+				y1 = getRand(y);
+				x2 = getRand(x);
+				y2 = getRand(y);
+				x3 = getRand(x);
+				y3 = getRand(y);
+			}
             return new Polygon(x1,y1,x2,y2,x3,y3);
-            
         }
-        public static double[][] getCircleCords(double centerX,double centerY, double radius){
+        /*public static double[][] getCircleCords(double centerX,double centerY, double radius){
             ArrayList<double[]> matrix = new ArrayList<double[]>();
             int count = 0;
             for(double x = (centerX-radius);x<=(radius+centerX);x=+Double.MIN_VALUE){
@@ -128,7 +130,7 @@ import javafx.scene.shape.Shape;
               cords[x][2] = matrix.get(x)[2];
             }
             return cords; 
-        }
+        }*/
         public static boolean CHT(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             return circle.contains(x1, y1)&&circle.contains(x2, y2)&&circle.contains(x3, y3);
         }
@@ -145,7 +147,7 @@ import javafx.scene.shape.Shape;
             
             //if(inter.getLayoutBounds().getHeight()<=0 || inter.getLayoutBounds().getWidth()<=0) {
         }
-        public static boolean circleHasTriangle(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
+        /*public static boolean circleHasTriangle(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             //Change if you want to make work with other shapes
             boolean[] checkpoints = new boolean[3];
             //boolean[] checkpoints={true,true,true,true};
@@ -172,7 +174,7 @@ import javafx.scene.shape.Shape;
                  }
             }
             return true;
-        }
+        }*/
         public void CTWSCr(Stage secondaryStage){
             Button btn = new Button("Click Me");
             Button btn2 = new Button ("Rapid Fire");
@@ -185,7 +187,7 @@ import javafx.scene.shape.Shape;
                 }
             });
             StackPane boot = new StackPane();
-            Circle le_un = new Circle((double)200,Color.RED);
+            Circle le_un = new Circle((double)200,Color.GREY);
             boot.getChildren().add(le_un);
             try{
                 //For some reason the StackPane won't illustrate the polygons in the ArrayList
