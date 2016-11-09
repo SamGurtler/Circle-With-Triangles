@@ -79,7 +79,7 @@ import javafx.scene.shape.Shape;
             return doInsertionSort(distances);
         }
         public static boolean isTriangulable(double[] distances){
-            if((distances[0]+distances[1])>distances[2]){
+            if((distances[0]+distances[1])>distances[2]/*distances[0]==distances[1]&&distances[1]==distances[2]*/){
                 return true;
             }
             else return false;
@@ -91,6 +91,7 @@ import javafx.scene.shape.Shape;
             boot.getChildren().remove(tri);
         }
         public Polygon makeTriangle(Circle circle,boolean Real_or_Fake,Polygon[] tri){
+			System.out.println("Entering makeTriangle.");
             double x1 = getRand(x);
             double y1 = getRand(y);
             double x2 = getRand(x);
@@ -100,6 +101,7 @@ import javafx.scene.shape.Shape;
             Polygon triangle = new Polygon(x1,y1,x2,y2,x3,y3);
             System.out.println("\tFirst->("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")");
             while(!getInter(triangle,tri)&&!CHT(circle,x1,y1,x2,y2,x3,y3)&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake)){
+				System.out.println("Entering While.");
 				System.out.println("NOPE!\nIs"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
 				System.out.println("Are"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"in the circle:"+CHT(circle,x1,y1,x2,y2,x3,y3));
 				System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+getInter(triangle,tri));
@@ -109,7 +111,8 @@ import javafx.scene.shape.Shape;
 				y2 = getRand(y);
 				x3 = getRand(x);
 				y3 = getRand(y);
-                                triangle = new Polygon(x1,y1,x2,y2,x3,y3);
+                triangle = new Polygon(x1,y1,x2,y2,x3,y3);
+				System.out.println("Ending While.");
 			}
             System.out.println("LAST->+++++++++++");
             System.out.println("Is"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
@@ -144,21 +147,11 @@ import javafx.scene.shape.Shape;
             return circle.contains(x1, y1)&&circle.contains(x2, y2)&&circle.contains(x3, y3);
         }
         public static boolean getInter(Polygon tri,Polygon[] triz){
-            Shape inter;
-            for (Polygon triz1 : triz) {
-                inter = Shape.intersect(triz1, tri);
-               // System.out.println(inter.getLayoutBounds().getWidth() + ":" + inter.getLayoutBounds().getHeight());
-                if(inter.getLayoutBounds().getHeight()>=0 ||inter.getLayoutBounds().getWidth()>=0) {
-                    return false;
-                }
-            }
-            for (Polygon triz1 : triz) {
-                inter = Shape.intersect(tri,triz1);
-               // System.out.println(inter.getLayoutBounds().getWidth() + ":" + inter.getLayoutBounds().getHeight());
-                if(inter.getLayoutBounds().getHeight()>=0 ||inter.getLayoutBounds().getWidth()>=0) {
-                    return false;
-                }
-            }
+			for (Polygon triz1 : triz) {
+				if(!tri.intersects(triz1.getLayoutBounds())){
+					return false;
+				}
+			}
             return true;
             
             //if(inter.getLayoutBounds().getHeight()<=0 || inter.getLayoutBounds().getWidth()<=0) {
