@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
     public class CTWs extends Application {
         private Parent root;    
@@ -96,18 +97,26 @@ import javafx.scene.shape.Shape;
             double y2 = getRand(y);
             double x3 = getRand(x);
             double y3 = getRand(y);
-            while((getInter(new Polygon(x1,y1,x2,y2,x3,y3),tri))&&!CHT(circle,x1,y1,x2,y2,x3,y3)&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake)){
-				System.out.println("Is"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
+            Polygon triangle = new Polygon(x1,y1,x2,y2,x3,y3);
+            System.out.println("\tFirst->("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")");
+            while(!getInter(triangle,tri)&&!CHT(circle,x1,y1,x2,y2,x3,y3)&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake)){
+				System.out.println("NOPE!\nIs"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
 				System.out.println("Are"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"in the circle:"+CHT(circle,x1,y1,x2,y2,x3,y3));
-				System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+getInter(new Polygon(x1,y1,x2,y2,x3,y3),tri));
+				System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+getInter(triangle,tri));
 				x1 = getRand(x);
 				y1 = getRand(y);
 				x2 = getRand(x);
 				y2 = getRand(y);
 				x3 = getRand(x);
 				y3 = getRand(y);
+                                triangle = new Polygon(x1,y1,x2,y2,x3,y3);
 			}
-            return new Polygon(x1,y1,x2,y2,x3,y3);
+            System.out.println("LAST->+++++++++++");
+            System.out.println("Is"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
+            System.out.println("Are"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"in the circle:"+CHT(circle,x1,y1,x2,y2,x3,y3));
+            System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+getInter(triangle,tri));
+            System.out.println("LAST->+++++++++++");
+            return triangle;
         }
         /*public static double[][] getCircleCords(double centerX,double centerY, double radius){
             ArrayList<double[]> matrix = new ArrayList<double[]>();
@@ -138,7 +147,14 @@ import javafx.scene.shape.Shape;
             Shape inter;
             for (Polygon triz1 : triz) {
                 inter = Shape.intersect(triz1, tri);
-                System.out.println(inter.getLayoutBounds().getWidth() + ":" + inter.getLayoutBounds().getHeight());
+               // System.out.println(inter.getLayoutBounds().getWidth() + ":" + inter.getLayoutBounds().getHeight());
+                if(inter.getLayoutBounds().getHeight()>=0 ||inter.getLayoutBounds().getWidth()>=0) {
+                    return false;
+                }
+            }
+            for (Polygon triz1 : triz) {
+                inter = Shape.intersect(tri,triz1);
+               // System.out.println(inter.getLayoutBounds().getWidth() + ":" + inter.getLayoutBounds().getHeight());
                 if(inter.getLayoutBounds().getHeight()>=0 ||inter.getLayoutBounds().getWidth()>=0) {
                     return false;
                 }
@@ -177,26 +193,37 @@ import javafx.scene.shape.Shape;
         }*/
         public void CTWSCr(Stage secondaryStage){
             Button btn = new Button("Click Me");
-            Button btn2 = new Button ("Rapid Fire");
+            //Button btn2 = new Button ("Rapid Fire");
             btn.setOnAction((ActionEvent event)->{CTWSCr(secondaryStage);});
-            btn2.setOnAction((ActionEvent event1)->{
+            /*btn2.setOnAction((ActionEvent event1)->{
                 for(int x1 = 5;x1>0;x1--){
                     //I think I need to make another Stage for Rapidfire
                     //Also ask for help on how to detect a key held down
                     CTWSRF(secondaryStage);
                 }
-            });
+            });*/
             StackPane boot = new StackPane();
             Circle le_un = new Circle((double)200,Color.GREY);
+            le_un.setStroke(Color.BLACK);
             boot.getChildren().add(le_un);
             try{
                 //For some reason the StackPane won't illustrate the polygons in the ArrayList
                 /*ArrayList<Polygon> Trianglefilling = new ArrayList<>();
                 for(int count = 0;count<10;count++){*/
                 Polygon[] Trianglefilling = new Polygon[2];
+                
+                for(int x1 =0;x1<Trianglefilling.length;x1++){
+                    Trianglefilling[x1] = new Polygon(0,0,1,0,0,1);
+                }
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
                    Trianglefilling[x2] = makeTriangle(le_un,true,Trianglefilling);
-                    /*for(int count = 0;count<Trianglefilling.length;count++){
+                   Trianglefilling[x2].setFill(Color.GREEN);
+                   Trianglefilling[x2].setStroke(Color.BLACK);
+                   Rectangle ShowBounds =new Rectangle(Trianglefilling[x2].getLayoutBounds().getMinX(),Trianglefilling[x2].getLayoutBounds().getMinY(),Trianglefilling[x2].getLayoutBounds().getWidth(),Trianglefilling[x2].getLayoutBounds().getHeight());
+                    ShowBounds.setFill(Color.TRANSPARENT);
+                    ShowBounds.setStroke(Color.YELLOWGREEN);
+                    boot.getChildren().add(ShowBounds);
+                   /*for(int count = 0;count<Trianglefilling.length;count++){
                     System.out.println(getInter(Trianglefilling[count],Trianglefilling));
                     }*/
                     addTriangle(boot,Trianglefilling[x2]);
@@ -206,15 +233,38 @@ import javafx.scene.shape.Shape;
                         ,getRand(x),getRand(y)
                         ,getRand(x),getRand(y)));*/
                 }
+                Shape inter;
+                for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                    for (int x3 = 0;x3<Trianglefilling.length;x3++) {
+                        inter = Shape.intersect(Trianglefilling[x2],Trianglefilling[x3]);
+                        inter.setFill(Color.RED);
+                        System.out.println(x2+" is not "+x3+":"+(x2!=x3));
+                        if(x2!=x3){
+                            boot.getChildren().add(inter);
+                            System.out.println("Shape was made.");
+                        }
+                    }
+                }
+                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                    for (int x3 = 0;x3<Trianglefilling.length;x3++) {
+                        inter = Shape.intersect(Trianglefilling[x3],Trianglefilling[x2]);
+                        inter.setFill(Color.RED);
+                        System.out.println(x2+" is not "+x3+":"+(x2!=x3));
+                        if(x2!=x3){
+                            boot.getChildren().add(inter);
+                            System.out.println("Shape was made.");
+                        }
+                    }
+                }
             }
             catch(java.lang.Exception exception){}
             Scene scene = new Scene(boot,x,y,Color.BLACK);
-            boot.getChildren().add(btn2);
+            //boot.getChildren().add(btn2);
             boot.getChildren().add(btn);
             btn.setTranslateY(-185);
             btn.setTranslateX(-167.5);
-            btn2.setTranslateY(-185);
-            btn2.setTranslateX(165);
+            //btn2.setTranslateY(-185);
+            //btn2.setTranslateX(165);
             secondaryStage.setTitle("Circle With Triangles");
             secondaryStage.setScene(scene);
             secondaryStage.show();
@@ -231,12 +281,15 @@ import javafx.scene.shape.Shape;
                 }
             });
             StackPane boot = new StackPane();
-            Circle le_un = new Circle((double)200,Color.RED);
+            Circle le_un = new Circle((double)200,Color.GREY);
             boot.getChildren().add(le_un);
             try{
                 /*//For some reason the StackPane won't illustrate the polygons in the ArrayList
                 ArrayList<Polygon> Trianglefilling = new ArrayList<>();*/
                 Polygon[] Trianglefilling = new Polygon[2];
+                for(int x1 =0;x1<Trianglefilling.length;x1++){
+                    Trianglefilling[x1] = new Polygon(175,176,174,176,172,175);
+                }
                 for(int x1 = 4;x1>0;x1--){
                     //I think I need to make another Stage for Rapidfire
                     //Also ask for help on how to detect a key held down
@@ -252,14 +305,24 @@ import javafx.scene.shape.Shape;
                     //new Thread(sleeper).start();
                     //root.wait(4);
                     //root.notify();
+                   
                     for(int x2 = 0;x2<Trianglefilling.length;x2++){
                         Trianglefilling[x2] = makeTriangle(le_un,true,Trianglefilling);
+                        Trianglefilling[x2].setFill(Color.GREEN);
                         addTriangle(boot,Trianglefilling[x2]);
                         /*//Keep Until you get ArrayList Working!!!
                         makeTriangles(boot,new Polygon(
                             getRand(x),getRand(y)
                             ,getRand(x),getRand(y)
                             ,getRand(x),getRand(y)));*/
+                    }
+                    Shape inter;
+                    for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                        for (int x3 = 0;x3<Trianglefilling.length;x3++) {
+                            inter = Shape.intersect(Trianglefilling[x2],Trianglefilling[x3]);
+                            inter.setFill(Color.RED);
+                            boot.getChildren().add(inter);
+                        }
                     }
                     //new Thread(sleeper).start();
                      //root.wait(4);
@@ -277,6 +340,14 @@ import javafx.scene.shape.Shape;
                         ,getRand(x),getRand(y)
                         ,getRand(x),getRand(y)));*/
                 }
+                Shape inter;
+                for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                        for (int x3 = 0;x3<Trianglefilling.length;x3++) {
+                            inter = Shape.intersect(Trianglefilling[x2],Trianglefilling[x3]);
+                            inter.setFill(Color.RED);
+                            boot.getChildren().add(inter);
+                        }
+                    }
             }
             catch(java.lang.Exception exception){}
             Scene scene = new Scene(boot,x,y,Color.BLACK);
