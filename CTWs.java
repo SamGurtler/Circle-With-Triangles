@@ -204,8 +204,16 @@ import javafx.scene.shape.Shape;
                 /*ArrayList<Polygon> Trianglefilling = new ArrayList<>();
                 for(int count = 0;count<10;count++){*/
                 Polygon[] Trianglefilling = new Polygon[2];
-                
-                for(int x1 =0;x1<Trianglefilling.length;x1++){
+                Trianglefilling[0] = new Polygon(25,25,125,25,125,125);
+				Trianglefilling[0].setFill(Color.BLUE);
+                Trianglefilling[0].setStroke(Color.BLACK);
+				addTriangle(boot,Trianglefilling[0]);
+				Trianglefilling[1] = new Polygon(125,25,125,125,25,125);
+				Trianglefilling[1].setFill(Color.ORANGE);
+                Trianglefilling[1].setStroke(Color.BLACK);
+				addTriangle(boot,Trianglefilling[1]);
+                /*_____ commented out till I have come to the conclusion that intersect works or not 
+				for(int x1 =0;x1<Trianglefilling.length;x1++){
                     Trianglefilling[x1] = new Polygon(0,0,1,0,0,1);
                 }
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
@@ -219,13 +227,13 @@ import javafx.scene.shape.Shape;
                    /*for(int count = 0;count<Trianglefilling.length;count++){
                     System.out.println(getInter(Trianglefilling[count],Trianglefilling));
                     }*/
-                    addTriangle(boot,Trianglefilling[x2]);
+                    //______addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
                         getRand(x),getRand(y)
                         ,getRand(x),getRand(y)
                         ,getRand(x),getRand(y)));*/
-                }
+                //________}
                 Shape inter;
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
                     for (int x3 = 0;x3<Trianglefilling.length;x3++) {
@@ -238,7 +246,7 @@ import javafx.scene.shape.Shape;
                         }
                     }
                 }
-                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                 /*for(int x2 = 0;x2<Trianglefilling.length;x2++){
                     for (int x3 = 0;x3<Trianglefilling.length;x3++) {
                         inter = Shape.intersect(Trianglefilling[x3],Trianglefilling[x2]);
                         inter.setFill(Color.RED);
@@ -248,7 +256,7 @@ import javafx.scene.shape.Shape;
                             System.out.println("Shape was made.");
                         }
                     }
-                }
+                }*/
             }
             catch(java.lang.Exception exception){}
             Scene scene = new Scene(boot,x,y,Color.BLACK);
