@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-//import java.util.List;
+import java.util.List;
 import java.util.Random;
 import java.lang.Double;
 import javafx.application.Application;
@@ -18,6 +18,7 @@ import javafx.scene.shape.Polygon;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import java.awt.Point;
     public class CTWs extends Application {
         private Parent root;    
         private double x = 400;
@@ -100,7 +101,7 @@ import javafx.scene.shape.Shape;
             double y3 = getRand(y);
             Polygon triangle = new Polygon(x1,y1,x2,y2,x3,y3);
             System.out.println("\tFirst->("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")");
-            while(!getInter(triangle,tri)&&!CHT(circle,x1,y1,x2,y2,x3,y3)&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake)){
+            while(!/*getInter(triangle,tri)*/getInter2(triangle,tri)&&!CHT(circle,x1,y1,x2,y2,x3,y3)&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake)){
 				System.out.println("Entering While.");
 				System.out.println("NOPE!\nIs"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
 				System.out.println("Are"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"in the circle:"+CHT(circle,x1,y1,x2,y2,x3,y3));
@@ -148,7 +149,7 @@ import javafx.scene.shape.Shape;
         }
         public static boolean getInter(Polygon tri,Polygon[] triz){
 			for (Polygon triz1 : triz) {
-				if(!tri.intersects(triz1.getLayoutBounds())){
+				if(tri.intersects(triz1.getLayoutBounds())){
 					return false;
 				}
 			}
@@ -156,6 +157,50 @@ import javafx.scene.shape.Shape;
             
             //if(inter.getLayoutBounds().getHeight()<=0 || inter.getLayoutBounds().getWidth()<=0) {
         }
+		public boolean  getInter2(Polygon poly, Polygon[] triz){
+			for(Polygon triz1:triz) {
+				List<Double> points = poly.getPoints();
+				for(int x = 0;x<points.size();x+=2) {
+					if(!triz1.intersects(points.get(x),points.get(x+1),1, 1)){ // The 3rd and 4th parameters here are "width" and "height". 1 for a point.
+						return false;
+					}
+				}
+			}
+			return true;	
+		}
+		public boolean getInter3(Polygon poly, Polygon[] triz){
+			java.awt.Polygon polyAWT = getAWTPolygon(poly);
+			java.awt.Polygon trizAWT[] = new java.awt.Polygon[triz.length];
+			for(int count = 0;count<triz.length;count++){
+				trizAWT[count] = getAWTPolygon(triz[count]);
+			}
+			//got help from stack overflow
+			for(int count = 0;count<trizAWT.length;count++){
+				AffineTransform normalTrans = AffineTransform.getTranslateInstance(0,0);
+				PathIterator iter = trizAWT[count].getPathIterator(normalTrans );
+				double[] point = new double[]{0,0};
+				do{
+					iter.current(point);
+					double x = point[0];
+					double y = point[1];
+					if(polyAWT.contains(x,y))return false;
+					iter.next();
+				}(while( !iter.isDone() );
+			}
+			return true
+		}
+		public static java.awt.Polygon getAWTPolygon(Polygon tri){
+			List<Double> points = tri.getPoints();
+			int[] xpoints = new int[(points.size()/2)];
+			int[] ypoints = new int[(points.size()/2)];
+			int count = 0;
+			for(int x=0;x<points.size();x+=2){
+				xpoints[count] = (int)(double)points.get(x);
+				ypoints[count] = (int)(double)points.get(x+1);
+				count++;
+			}
+ 			return new java.awt.Polygon(xpoints,ypoints,(points.size()/2));
+		}
         /*public static boolean circleHasTriangle(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             //Change if you want to make work with other shapes
             boolean[] checkpoints = new boolean[3];
@@ -204,15 +249,15 @@ import javafx.scene.shape.Shape;
                 /*ArrayList<Polygon> Trianglefilling = new ArrayList<>();
                 for(int count = 0;count<10;count++){*/
                 Polygon[] Trianglefilling = new Polygon[2];
-                Trianglefilling[0] = new Polygon(25,25,125,25,125,125);
+                /*Trianglefilling[0] = new Polygon(25,25,125,25,125,125);
 				Trianglefilling[0].setFill(Color.BLUE);
                 Trianglefilling[0].setStroke(Color.BLACK);
 				addTriangle(boot,Trianglefilling[0]);
 				Trianglefilling[1] = new Polygon(125,25,125,125,25,125);
 				Trianglefilling[1].setFill(Color.ORANGE);
                 Trianglefilling[1].setStroke(Color.BLACK);
-				addTriangle(boot,Trianglefilling[1]);
-                /*_____ commented out till I have come to the conclusion that intersect works or not 
+				addTriangle(boot,Trianglefilling[1]);*/
+               // _____ commented out till I have come to the conclusion that intersect works or not 
 				for(int x1 =0;x1<Trianglefilling.length;x1++){
                     Trianglefilling[x1] = new Polygon(0,0,1,0,0,1);
                 }
@@ -224,16 +269,16 @@ import javafx.scene.shape.Shape;
                     ShowBounds.setFill(Color.TRANSPARENT);
                     ShowBounds.setStroke(Color.YELLOWGREEN);
                     boot.getChildren().add(ShowBounds);
-                   /*for(int count = 0;count<Trianglefilling.length;count++){
+                   for(int count = 0;count<Trianglefilling.length;count++){
                     System.out.println(getInter(Trianglefilling[count],Trianglefilling));
-                    }*/
-                    //______addTriangle(boot,Trianglefilling[x2]);
+                    }
+                    addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
                     makeTriangles(boot,new Polygon(
                         getRand(x),getRand(y)
                         ,getRand(x),getRand(y)
                         ,getRand(x),getRand(y)));*/
-                //________}
+                }
                 Shape inter;
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
                     for (int x3 = 0;x3<Trianglefilling.length;x3++) {
@@ -270,6 +315,7 @@ import javafx.scene.shape.Shape;
             secondaryStage.setScene(scene);
             secondaryStage.show();
             }
+			
         public void CTWSRF(Stage secondaryStage){
             Button btn = new Button("Click Me");
             Button btn2 = new Button ("Rapid Fire");
