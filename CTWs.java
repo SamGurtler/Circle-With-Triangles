@@ -19,10 +19,13 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
+import javafx.scene.layout.Pane;
     public class CTWs extends Application {
         private Parent root;    
-        private double x = 400;
-        private double y = 400;
+        private final double x = 400;
+        private final double y = 400;
         @Override
         public void start(Stage primaryStage) {
             Button btn = new Button("Click Me");
@@ -80,15 +83,18 @@ import java.awt.Point;
             return doInsertionSort(distances);
         }
         public static boolean isTriangulable(double[] distances){
-            if((distances[0]+distances[1])>distances[2]/*distances[0]==distances[1]&&distances[1]==distances[2]*/){
-                return true;
-            }
-            else return false;
+            //scalene triangle
+            //return (distances[0]+distances[1])>distances[2];
+            //equilateral triangle
+           // return (int)distances[0]==(int)distances[1]&&(int)distances[1]==(int)distances[2];
+            //isosceles triangle
+            //return distances[0]==distances[1]||distances[1]==distances[2];
+            return (distances[0]>=5&&distances[1]>=5&&distances[2]>=5);
         }
-        public static void addTriangle(StackPane root,Polygon tri){
+        public static void addTriangle(Pane root,Polygon tri){
             root.getChildren().add(tri);
         }
-        public static void removeTriangle(StackPane boot,Polygon tri){
+        public static void removeTriangle(Pane boot,Polygon tri){
             boot.getChildren().remove(tri);
         }
         public Polygon makeTriangle(Circle circle,boolean Real_or_Fake,Polygon[] tri){
@@ -101,11 +107,11 @@ import java.awt.Point;
             double y3 = getRand(y);
             Polygon triangle = new Polygon(x1,y1,x2,y2,x3,y3);
             System.out.println("\tFirst->("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")");
-            while(!/*getInter(triangle,tri)*/getInter2(triangle,tri)&&!CHT(circle,x1,y1,x2,y2,x3,y3)&&(!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3))==Real_or_Fake)){
+            while((isInter(triangle,tri))||(!CHT(circle,x1,y1,x2,y2,x3,y3))||((!isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)))==Real_or_Fake)){
 				System.out.println("Entering While.");
 				System.out.println("NOPE!\nIs"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
 				System.out.println("Are"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"in the circle:"+CHT(circle,x1,y1,x2,y2,x3,y3));
-				System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+getInter(triangle,tri));
+				System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+isInter(triangle,tri));
 				x1 = getRand(x);
 				y1 = getRand(y);
 				x2 = getRand(x);
@@ -115,11 +121,11 @@ import java.awt.Point;
                 triangle = new Polygon(x1,y1,x2,y2,x3,y3);
 				System.out.println("Ending While.");
 			}
-            System.out.println("LAST->+++++++++++");
+            System.out.println("LAST->++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             System.out.println("Is"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+" a triangle:"+isTriangulable(triangleSideLength(x1,y1,x2,y2,x3,y3)));
             System.out.println("Are"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"in the circle:"+CHT(circle,x1,y1,x2,y2,x3,y3));
-            System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+getInter(triangle,tri));
-            System.out.println("LAST->+++++++++++");
+            System.out.println("Does"+"("+x1+","+y1+")"+"("+x2+","+y2+")"+"("+x3+","+y3+")"+"intersect with another triangle:"+isInter(triangle,tri));
+            System.out.println("LAST->++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             return triangle;
         }
         /*public static double[][] getCircleCords(double centerX,double centerY, double radius){
@@ -147,60 +153,84 @@ import java.awt.Point;
         public static boolean CHT(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             return circle.contains(x1, y1)&&circle.contains(x2, y2)&&circle.contains(x3, y3);
         }
-        public static boolean getInter(Polygon tri,Polygon[] triz){
-			for (Polygon triz1 : triz) {
-				if(tri.intersects(triz1.getLayoutBounds())){
-					return false;
-				}
-			}
-            return true;
-            
+        public static boolean isInter(Polygon tri,Polygon[] triz){
+            for (Polygon triz1 : triz) {
+		if(tri.intersects(triz1.getLayoutBounds())){
+			return true;
+		}
+            }
+            return false;
             //if(inter.getLayoutBounds().getHeight()<=0 || inter.getLayoutBounds().getWidth()<=0) {
         }
-		public boolean  getInter2(Polygon poly, Polygon[] triz){
-			for(Polygon triz1:triz) {
-				List<Double> points = poly.getPoints();
-				for(int x = 0;x<points.size();x+=2) {
-					if(!triz1.intersects(points.get(x),points.get(x+1),1, 1)){ // The 3rd and 4th parameters here are "width" and "height". 1 for a point.
-						return false;
-					}
-				}
-			}
-			return true;	
+        public boolean  isInter2(Polygon poly, Polygon[] triz){
+                for(Polygon triz1:triz) {
+                        List<Double> points = poly.getPoints();
+                        for(int count = 0;count<points.size();count+=2) {
+                                if(!triz1.intersects(points.get(count),points.get(count+1),1, 1)){ // The 3rd and 4th parameters here are "width" and "height". 1 for a point.
+                                        return true;
+                                }
+                        }
+                }
+                return false;	
+        }
+        public boolean isInter3(Polygon poly, Polygon[] triz){
+                java.awt.Polygon polyAWT = getAWTPolygon(poly);
+                java.awt.Polygon trizAWT[] = new java.awt.Polygon[triz.length];
+            for(int count = 0;count<triz.length;count++){
+                        trizAWT[count] = getAWTPolygon(triz[count]);
+            }
+            for (java.awt.Polygon trizAWT1 : trizAWT) {
+                    AffineTransform normalTrans = AffineTransform.getTranslateInstance(0,0);
+                    PathIterator iter = trizAWT1.getPathIterator(normalTrans);
+                    double[] point = new double[]{0,0};
+                    do{
+                        iter.currentSegment(point);
+                        double ax = point[0];
+                        double ay = point[1];
+                        if(polyAWT.contains(ax,ay)){
+                            System.out.println("Intersection at ("+ax+","+ay+").");
+                            return true;
+                        }
+                        iter.next();
+                    }while( !iter.isDone() );
+            }
+            return false;
+        }
+        public static Polygon getInter3Shape(Polygon poly,Polygon triz ){
+            AffineTransform normalTrans = AffineTransform.getTranslateInstance(0,0);
+            PathIterator iter = getAWTPolygon(triz).getPathIterator(normalTrans);
+            double[] point = new double[]{0,0};
+            ArrayList<Double> interpoint =new ArrayList<>();
+            do{
+                iter.currentSegment(point);
+                if(poly.contains(point[0],point[1])){
+                   System.out.println("Intersection at ("+point[0]+","+point[1]+").");
+                   interpoint.add(point[0]);
+                   interpoint.add(point[1]);
+                }
+                iter.next();
+            }while( !iter.isDone() );
+            return new Polygon(maybePointless((Double[]) interpoint.toArray()));
+        }
+        public static double[] maybePointless(Double[] input){
+            double[] output = new double[input.length];
+            for(int count = 0;count<input.length;count++){
+                output[count] = (double)input[count];
+            }
+            return output;
+        }
+        public static java.awt.Polygon getAWTPolygon(Polygon tri){
+                List<Double> points = tri.getPoints();
+                int[] xpoints = new int[(points.size()/2)];
+                int[] ypoints = new int[(points.size()/2)];
+                int count = 0;
+                for(int x=0;x<points.size();x+=2){
+			xpoints[count] = (int)(double)points.get(x);
+			ypoints[count] = (int)(double)points.get(x+1);
+			count++;
 		}
-		public boolean getInter3(Polygon poly, Polygon[] triz){
-			java.awt.Polygon polyAWT = getAWTPolygon(poly);
-			java.awt.Polygon trizAWT[] = new java.awt.Polygon[triz.length];
-			for(int count = 0;count<triz.length;count++){
-				trizAWT[count] = getAWTPolygon(triz[count]);
-			}
-			//got help from stack overflow
-			for(int count = 0;count<trizAWT.length;count++){
-				AffineTransform normalTrans = AffineTransform.getTranslateInstance(0,0);
-				PathIterator iter = trizAWT[count].getPathIterator(normalTrans );
-				double[] point = new double[]{0,0};
-				do{
-					iter.current(point);
-					double x = point[0];
-					double y = point[1];
-					if(polyAWT.contains(x,y))return false;
-					iter.next();
-				}(while( !iter.isDone() );
-			}
-			return true
-		}
-		public static java.awt.Polygon getAWTPolygon(Polygon tri){
-			List<Double> points = tri.getPoints();
-			int[] xpoints = new int[(points.size()/2)];
-			int[] ypoints = new int[(points.size()/2)];
-			int count = 0;
-			for(int x=0;x<points.size();x+=2){
-				xpoints[count] = (int)(double)points.get(x);
-				ypoints[count] = (int)(double)points.get(x+1);
-				count++;
-			}
- 			return new java.awt.Polygon(xpoints,ypoints,(points.size()/2));
-		}
+ 		return new java.awt.Polygon(xpoints,ypoints,(points.size()/2));
+	}
         /*public static boolean circleHasTriangle(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             //Change if you want to make work with other shapes
             boolean[] checkpoints = new boolean[3];
@@ -240,37 +270,37 @@ import java.awt.Point;
                     CTWSRF(secondaryStage);
                 }
             });*/
-            StackPane boot = new StackPane();
-            Circle le_un = new Circle((double)200,Color.GREY);
+            Pane boot = new Pane();
+            Circle le_un = new Circle(200,200,(double)200,Color.GREY);
             le_un.setStroke(Color.BLACK);
             boot.getChildren().add(le_un);
             try{
                 //For some reason the StackPane won't illustrate the polygons in the ArrayList
                 /*ArrayList<Polygon> Trianglefilling = new ArrayList<>();
                 for(int count = 0;count<10;count++){*/
-                Polygon[] Trianglefilling = new Polygon[2];
-                /*Trianglefilling[0] = new Polygon(25,25,125,25,125,125);
+                Polygon[] Trianglefilling = new Polygon[10];
+                /*Trianglefilling[0] = new Polygon(25-25,25,125-25,25,125-25,125);
 				Trianglefilling[0].setFill(Color.BLUE);
                 Trianglefilling[0].setStroke(Color.BLACK);
 				addTriangle(boot,Trianglefilling[0]);
-				Trianglefilling[1] = new Polygon(125,25,125,125,25,125);
+				Trianglefilling[1] = new Polygon(125-25,25,125-25,125,25-25,125);
 				Trianglefilling[1].setFill(Color.ORANGE);
                 Trianglefilling[1].setStroke(Color.BLACK);
 				addTriangle(boot,Trianglefilling[1]);*/
                // _____ commented out till I have come to the conclusion that intersect works or not 
-				for(int x1 =0;x1<Trianglefilling.length;x1++){
+		for(int x1 =0;x1<Trianglefilling.length;x1++){
                     Trianglefilling[x1] = new Polygon(0,0,1,0,0,1);
                 }
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
                    Trianglefilling[x2] = makeTriangle(le_un,true,Trianglefilling);
                    Trianglefilling[x2].setFill(Color.GREEN);
                    Trianglefilling[x2].setStroke(Color.BLACK);
-                   Rectangle ShowBounds =new Rectangle(Trianglefilling[x2].getLayoutBounds().getMinX(),Trianglefilling[x2].getLayoutBounds().getMinY(),Trianglefilling[x2].getLayoutBounds().getWidth(),Trianglefilling[x2].getLayoutBounds().getHeight());
+                   /*Rectangle ShowBounds =new Rectangle(Trianglefilling[x2].getLayoutBounds().getMinX(),Trianglefilling[x2].getLayoutBounds().getMinY(),Trianglefilling[x2].getLayoutBounds().getWidth(),Trianglefilling[x2].getLayoutBounds().getHeight());
                     ShowBounds.setFill(Color.TRANSPARENT);
                     ShowBounds.setStroke(Color.YELLOWGREEN);
-                    boot.getChildren().add(ShowBounds);
+                    boot.getChildren().add(ShowBounds);*/
                    for(int count = 0;count<Trianglefilling.length;count++){
-                    System.out.println(getInter(Trianglefilling[count],Trianglefilling));
+                    System.out.println(isInter(Trianglefilling[count],Trianglefilling));
                     }
                     addTriangle(boot,Trianglefilling[x2]);
                     /*//Keep Until you get ArrayList Working!!!
@@ -279,10 +309,9 @@ import java.awt.Point;
                         ,getRand(x),getRand(y)
                         ,getRand(x),getRand(y)));*/
                 }
-                Shape inter;
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
                     for (int x3 = 0;x3<Trianglefilling.length;x3++) {
-                        inter = Shape.intersect(Trianglefilling[x2],Trianglefilling[x3]);
+                      Shape inter = Shape.intersect(Trianglefilling[x2],Trianglefilling[x3]);
                         inter.setFill(Color.RED);
                         System.out.println(x2+" is not "+x3+":"+(x2!=x3));
                         if(x2!=x3){
@@ -291,24 +320,41 @@ import java.awt.Point;
                         }
                     }
                 }
-                 /*for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                    for (int x3 = 0;x3<Trianglefilling.length;x3++) {
-                        inter = Shape.intersect(Trianglefilling[x3],Trianglefilling[x2]);
-                        inter.setFill(Color.RED);
-                        System.out.println(x2+" is not "+x3+":"+(x2!=x3));
-                        if(x2!=x3){
-                            boot.getChildren().add(inter);
-                            System.out.println("Shape was made.");
-                        }
+               /*Polygon inter1;
+                for (Polygon Trianglefilling2 : Trianglefilling) {
+                    for (Polygon Trianglefilling1 : Trianglefilling) {
+                        inter1 = getInter3Shape(Trianglefilling2, Trianglefilling1);
+                        inter1.setFill(Color.CRIMSON);
+                        boot.getChildren().add(inter1);
+                        System.out.println("Shape was made.");
                     }
+                }
+                for (Polygon Trianglefilling2 : Trianglefilling) {
+                    for (Polygon Trianglefilling1 : Trianglefilling) {
+                        inter1 = getInter3Shape(Trianglefilling1, Trianglefilling2);
+                        inter1.setFill(Color.CRIMSON);
+                        boot.getChildren().add(inter1);
+                        System.out.println("Shape was made.");
+                    }
+                }*/
+                /*for(int x2 = 0;x2<Trianglefilling.length;x2++){
+                for (int x3 = 0;x3<Trianglefilling.length;x3++) {
+                inter = Shape.intersect(Trianglefilling[x3],Trianglefilling[x2]);
+                inter.setFill(Color.RED);
+                System.out.println(x2+" is not "+x3+":"+(x2!=x3));
+                if(x2!=x3){
+                boot.getChildren().add(inter);
+                System.out.println("Shape was made.");
+                }
+                }
                 }*/
             }
             catch(java.lang.Exception exception){}
             Scene scene = new Scene(boot,x,y,Color.BLACK);
             //boot.getChildren().add(btn2);
             boot.getChildren().add(btn);
-            btn.setTranslateY(-185);
-            btn.setTranslateX(-167.5);
+            //btn.setTranslateY(-185);
+            //btn.setTranslateX(-167.5);
             //btn2.setTranslateY(-185);
             //btn2.setTranslateX(165);
             secondaryStage.setTitle("Circle With Triangles");
@@ -327,8 +373,8 @@ import java.awt.Point;
                     CTWSRF(secondaryStage);
                 }
             });
-            StackPane boot = new StackPane();
-            Circle le_un = new Circle((double)200,Color.GREY);
+            Pane boot = new Pane();
+            Circle le_un = new Circle(200,200,(double)200,Color.GREY);
             boot.getChildren().add(le_un);
             try{
                 /*//For some reason the StackPane won't illustrate the polygons in the ArrayList
