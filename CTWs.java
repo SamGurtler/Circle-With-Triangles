@@ -11,18 +11,19 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 import javafx.scene.layout.Pane;
-import java.awt.MouseInfo;
 import javafx.scene.input.MouseEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.ProgressBar;
     public class CTWs extends Application {
         private Parent root;    
         private final double x = 400;
         private final double y = 400;
-		private Polygon[] Trianglefilling;
+	private Polygon[] Trianglefilling;
         @Override
         public void start(Stage primaryStage) {
             Button btn = new Button("Click Me");
             StackPane moot = new StackPane();
-			btn.setOnAction((ActionEvent event)->{CTWSCr(primaryStage,moot);});
+            btn.setOnAction((ActionEvent event)->{CTWSCr(primaryStage);});
             moot.getChildren().add(btn);
             Scene scene = new Scene(moot, 300, 50,Color.BLACK);
             primaryStage.setTitle("Circle With Triangles");
@@ -66,7 +67,7 @@ import javafx.scene.input.MouseEvent;
             boot.getChildren().remove(tri);
         }
         public Polygon makeTriangle(Circle circle,boolean Real_or_Fake,Polygon[] tri){
-			System.out.println("Entering makeTriangle.");
+            System.out.println("Entering makeTriangle.");
             double x1 = getRand(x);
             double y1 = getRand(y);
             double x2 = getRand(x);
@@ -96,16 +97,22 @@ import javafx.scene.input.MouseEvent;
             System.out.println("LAST->++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             return triangle;
         }
-		public Polygon[] randomTriangles(){
-                Polygon[] Trianglefilling = new Polygon[10];
-				for(int x1 =0;x1<Trianglefilling.length;x1++){
-                    Trianglefilling[x1] = new Polygon(0,0,1,0,0,1);
-                }
-                for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                   Trianglefilling[x2] = makeTriangle(new Circle(200,200,(double)200,Color.GREY),true,Trianglefilling);
-				}
-				return Trianglefilling;
-		}
+	public Polygon[] randomTriangles(Stage secondaryStage){
+            Polygon[] Polygon_array = new Polygon[10];
+            for(int x1 =0;x1<Polygon_array.length;x1++){
+                Polygon_array[x1] = new Polygon(0,0,1,0,0,1);
+            }
+            for(int x2 = 0;x2<Polygon_array.length;x2++){
+                Polygon_array[x2] = makeTriangle(new Circle(200,200,(double)200,Color.GREY),true,Polygon_array); 
+                load(secondaryStage,(x2+1)/100);
+            }
+            return Polygon_array;
+        }
+        public void load(Stage secondaryStage,double progress){
+            StackPane moot = new StackPane();
+            ProgressBar pb = new ProgressBar(progress);
+            moot.getChildren().add(pb);
+        }
         public static boolean CHT(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             return circle.contains(x1, y1)&&circle.contains(x2, y2)&&circle.contains(x3, y3);
         }
@@ -117,16 +124,15 @@ import javafx.scene.input.MouseEvent;
             }
             return false;
         }
-        public void CTWSCr(Stage secondaryStage,StackPane moot){
+        public void CTWSCr(Stage secondaryStage){
             Button btn = new Button("Click Me");
-			StackPane idkwhy = moot;
-            btn.setOnAction((ActionEvent event)->{CTWSCr(secondaryStage,idkwhy);});
+            btn.setOnAction((ActionEvent event)->{CTWSCr(secondaryStage);});
             Pane boot = new Pane();
             Circle le_un = new Circle(200,200,(double)200,Color.GREY);
             le_un.setStroke(Color.BLACK);
             boot.getChildren().add(le_un);
             try{
-                Trianglefilling = randomTriangles();
+                Trianglefilling = randomTriangles(secondaryStage);
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
                    Trianglefilling[x2].setFill(Color.GREEN);
                    Trianglefilling[x2].setStroke(Color.BLACK);
@@ -151,27 +157,28 @@ import javafx.scene.input.MouseEvent;
             catch(java.lang.Exception exception){}
             Scene scene = new Scene(boot,x,y,Color.BLACK);
             boot.getChildren().add(btn);
-			boot.setOnMouseMoved((MouseEvent event1)->{CTWSMOUSE(secondaryStage,idkwhy);});
+	    boot.setOnMouseMoved((MouseEvent me) -> {
+                CTWSMOUSE(secondaryStage,200,200);
+            });
             secondaryStage.setTitle("Circle With Triangles");
             secondaryStage.setScene(scene);
             secondaryStage.show();
             }
-		public void CTWSMOUSE(Stage secondaryStage,StackPane moot){
-			Button btn = new Button("Click Me");
-			StackPane idkwhy = moot;
-            btn.setOnAction((ActionEvent event)->{CTWSCr(secondaryStage,idkwhy);});
+        public void CTWSMOUSE(Stage secondaryStage,double mouse_X,double mouse_Y){
+            Button btn = new Button("Click Me");
+            btn.setOnAction((ActionEvent event)->{CTWSCr(secondaryStage);});
             Pane boot = new Pane();
             Circle le_un = new Circle(200,200,(double)200,Color.GREY);
-			Circle cusor = new Circle(MouseInfo.getPointerInfo().getLocation().x, MouseInfo.getPointerInfo().getLocation().y,(double)20,Color.RED);
+            Circle cusor = new Circle(mouse_X,mouse_Y,(double)2,Color.RED);
             le_un.setStroke(Color.BLACK);
             boot.getChildren().add(le_un);
-			boot.getChildren().add(cusor);
+            boot.getChildren().add(cusor);
             try{
                 for(int x2 = 0;x2<Trianglefilling.length;x2++){
-                   Trianglefilling[x2].setFill(Color.GREEN);
-                   Trianglefilling[x2].setStroke(Color.BLACK);
-                   for(int count = 0;count<Trianglefilling.length;count++){
-                    System.out.println(isInter(Trianglefilling[count],Trianglefilling));
+                    Trianglefilling[x2].setFill(Color.GREEN);
+                    Trianglefilling[x2].setStroke(Color.BLACK);
+                    for(int count = 0;count<Trianglefilling.length;count++){
+                        System.out.println(isInter(Trianglefilling[count],Trianglefilling));
                     }
                     addTriangle(boot,Trianglefilling[x2]);
                 }
@@ -179,11 +186,13 @@ import javafx.scene.input.MouseEvent;
             catch(java.lang.Exception exception){}
             Scene scene = new Scene(boot,x,y,Color.BLACK);
             boot.getChildren().add(btn);
-			boot.setOnMouseMoved((MouseEvent event1)->{CTWSMOUSE(secondaryStage,idkwhy);});
+            boot.setOnMouseMoved((MouseEvent me) -> {
+                CTWSMOUSE(secondaryStage,me.getX(),me.getY());
+            });
             secondaryStage.setTitle("Circle With Triangles");
             secondaryStage.setScene(scene);
             secondaryStage.show();
-            }
+        }
         public static void main(String[] args) {
             launch(args);
         }
