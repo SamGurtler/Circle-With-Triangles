@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.input.MouseEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
     public class CTWs extends Application {
         private Parent root;    
         private final double x = 400;
@@ -103,15 +104,21 @@ import javafx.scene.control.ProgressBar;
                 Polygon_array[x1] = new Polygon(0,0,1,0,0,1);
             }
             for(int x2 = 0;x2<Polygon_array.length;x2++){
-                Polygon_array[x2] = makeTriangle(new Circle(200,200,(double)200,Color.GREY),true,Polygon_array); 
-                load(secondaryStage,(x2+1)/100);
+                Polygon_array[x2] = makeTriangle(new Circle(200,200,(double)200,Color.GREY),true,Polygon_array);
+                load(secondaryStage,(x2));
             }
             return Polygon_array;
         }
-        public void load(Stage secondaryStage,double progress){
+        public void load(Stage secondaryStage,float progress){
             StackPane moot = new StackPane();
-            ProgressBar pb = new ProgressBar(progress);
-            moot.getChildren().add(pb);
+            ProgressIndicator pi = new ProgressIndicator(0);
+            //pi.setProgress((progress+1)/10);
+            pi.setProgress(getRand(9)/10);
+            moot.getChildren().add(pi);
+            Scene scene = new Scene(moot,x,y,Color.BLACK);
+            secondaryStage.setTitle("Circle With Triangles");
+            secondaryStage.setScene(scene);
+            secondaryStage.show();
         }
         public static boolean CHT(Circle circle,double x1,double y1,double x2,double y2,double x3,double y3){
             return circle.contains(x1, y1)&&circle.contains(x2, y2)&&circle.contains(x3, y3);
